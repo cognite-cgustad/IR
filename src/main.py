@@ -12,8 +12,9 @@ image_paths.sort()
 # Pick baseline image as inital image
 baseline_path = image_paths.pop(0)
 baseline_image = cv2.imread(baseline_path)
-baseline_gray = cv2.cvtColor(baseline_image, cv2.COLOR_BGR2GRAY)
-b_cp = np.copy(baseline_gray)
+b_hls = cv2.cvtColor(baseline_image, cv2.COLOR_BGR2HLS)
+b_h, b_l, b_s = b_hls[:, :, 0], b_hls[:, :, 1], b_hls[:, :, 2]
+b_cp = np.copy(b_l)
 
 
 def ir_analysis(filename):
@@ -21,14 +22,15 @@ def ir_analysis(filename):
     img = cv2.imread(filename)
     # # Add black spots
     for i in range(0, 20):
-        x = np.random.randint(low = 0, high = 300)
-        y = np.random.randint(low = 0, high = 220)
-        p0 = x,y
-        p1 = x+5,y+5
-        cv2.rectangle(img,p0,p1,(5,5,5),cv2.FILLED)
-    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        x = np.random.randint(low=0, high=300)
+        y = np.random.randint(low=0, high=220)
+        p0 = x, y
+        p1 = x+5, y+5
+        cv2.rectangle(img, p0, p1, (5, 5, 5), cv2.FILLED)
+    hls_img = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+    h, l, s = hls_img[:, :, 0], hls_img[:, :, 1], hls_img[:, :, 2]
 
-    cp = np.copy(img_gray)
+    cp = np.copy(l)
     hot = cold = np.zeros(cp.shape)
     hotness = coldness = 0
     for row in range(cp.shape[0]):
@@ -51,7 +53,6 @@ def make_plot():
     for count, path in enumerate(image_paths):
         index = 4*count
         img, lightness, hot, cold, total_heat, total_cool = ir_analysis(path)
-       
         hot = np.ma.masked_where(hot <= 0, hot)
         cold = np.ma.masked_where(cold >= 0, cold)
         print(f"Total heat: {total_heat}")
@@ -63,7 +64,7 @@ def make_plot():
         plt.axis('off')
         # Add image
         plt.subplot(rows, cols, index+2)
-        plt.title(f"{image_name}")
+#        plt.title(f"{image_name}")
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         plt.axis('off')
         # Add hot
@@ -78,5 +79,5 @@ def make_plot():
         plt.imshow(cold, cmap='cool')
         plt.axis('off')
     plt.show()
-#for fname in ['.jpg', '_1w.jpg', '_2w.jpg', '_3w.jpg']:
-#    print(fname, pixel_temperature_score('/home/luka/dev/cognite/power-demo-apps/infrared.cache/p9085' + fname, 148))
+
+
