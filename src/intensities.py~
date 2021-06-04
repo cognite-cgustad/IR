@@ -1,0 +1,20 @@
+import cv2
+from matplotlib import pyplot as plt
+import numpy as np
+import os
+
+image_paths = []
+for root, dirs, files in os.walk("./../img", topdown=False):
+    for name in files:
+        image_paths.append(os.path.join(root, name))
+image_paths.sort()
+
+# Pick baseline image as inital image
+baseline_path = image_paths.pop(0)
+baseline_image = cv2.imread(baseline_path)
+baseline_hls = cv2.cvtColor(baseline_image, cv2.COLOR_BGR2HLS)
+baseline_h, baseline_l, baseline_s =  baseline_hls[:, :, 0], baseline_hls[:, :, 1], baseline_hls[:, :, 2]
+baseline_gray = cv2.cvtColor(baseline_image, cv2.COLOR_BGR2GRAY)
+b_cp = np.copy(baseline_l)
+b_gray = np.copy(baseline_gray)
+
