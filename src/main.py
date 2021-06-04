@@ -51,7 +51,7 @@ def make_plot():
     for count, path in enumerate(image_paths):
         index = 4*count
         img, lightness, hot, cold, total_heat, total_cool = ir_analysis(path)
-        image_name = path.split('/')[-1]
+       
         hot = np.ma.masked_where(hot <= 0, hot)
         cold = np.ma.masked_where(cold >= 0, cold)
         print(f"Total heat: {total_heat}")
